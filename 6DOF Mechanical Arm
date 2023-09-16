@@ -1,0 +1,138 @@
+ #include <Servo.h>
+
+Servo s1, s2, s3, s4, s5, s6;
+int i1 = 90, i2 = 90, i3 = 90, i4 = 90, i5 = 90, i6 = 20;
+
+char command; // Stores incoming Bluetooth commands
+
+void setup() {
+  // Initialize servos
+  s1.attach(3); // Pin for servo 1
+  s2.attach(5); // Pin for servo 2
+  s3.attach(6); // Pin for servo 3
+  s4.attach(9); // Pin for servo 4
+  s5.attach(10); // Pin for servo 5
+  s6.attach(11); // Pin for servo 6
+  s1.write(i1);
+  s2.write(i2);
+  s3.write(i3);
+  s4.write(i4);
+  s5.write(i5);
+  s6.write(i6);
+  // Initialize serial communication with a baud rate of 9600
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    command = Serial.read();
+    Serial.print(command); // Read the incoming command
+
+    // Control servos based on the received command
+    //-----------------------------servo 1---------------------------------------------
+    if (command == 'L') {
+      i1++;
+      runServo(s1, i1);
+      Serial.print("S1 Left");
+    }
+    if (command == 'R') {
+      i1--;
+      runServo(s1, i1);
+      Serial.print("S2 Right");
+    }
+    //--------------------------servo 2--------------------------------------
+    if (command == 'F') {
+      i2++;
+      runServo(s2, i2);
+      Serial.print("Servo2 Up");
+    }
+    if (command == 'B') {
+      i2--;
+      runServo(s2, i2);
+      Serial.print("Servo2 Down");
+    }
+    // -----------------------------servo 6-----------------------------
+    if (command == 'V') {
+      s6.write(93);
+      Serial.print("End Effector\" Open\"");
+    }
+    if (command == 'v') {
+      s6.write(20);
+      Serial.print("End Effector \"Close\"");
+    }
+    //------------------servo3 & servo1---------------------
+    if (command == 'W') {
+      while (1) {
+        command = Serial.read();
+        Serial.print(command);
+        //-------------servo3---------------
+        if (command == 'F') {
+          i3++;
+          runServo(s3, i3);
+          Serial.print("Servo3 UP");
+        }
+        if (command == 'B') {
+          i3--;
+          runServo(s3, i3);
+          Serial.print("Servo3 Down");
+        }
+        //---------------servo 1---------------
+        if (command == 'L') {
+          i1++;
+          runServo(s1, i1);
+          Serial.print("Servo1 Left");
+        }
+        if (command == 'R') {
+          i1--;
+          runServo(s1, i1);
+          Serial.print("Servo1 Right");
+        }
+        if (command == 'w') {
+          break;
+        }
+        Serial.println("");
+      }
+    }
+    //-----------------servo4 &servo5----------------------
+    if (command == 'U') {
+      while (1) {
+        command = Serial.read();
+        Serial.print(command);
+        //----------------servo4-------------------
+        if (command == 'F') {
+          i4++;
+          runServo(s4, i4);
+          Serial.print("Servo5 Up");
+        }
+        if (command == 'B') {
+          i4--;
+          runServo(s4, i4);
+          Serial.print("Servo4 Down");
+        }
+        if (command == 'L') {
+          i5++;
+          runServo(s5, i5);
+          Serial.print("Clock-Wise");
+        }
+        if (command == 'R') {
+          i5--;
+          runServo(s5, i5);
+          Serial.print("Anti-Clock Wise");
+        }
+        if (command == 'u') {
+          break;
+        }
+        Serial.println("");
+      }
+    }
+    Serial.println("");
+  }
+}
+
+void runServo(Servo &s, int angle) {
+  if (angle > 180)
+    angle = 180;
+  if (angle < 0)
+    angle = 0;
+  s.write(angle);
+}
